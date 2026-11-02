@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Race Game</title>
+<style>
+body{margin:0;background:#222;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:Arial}
+#gameBox{position:relative;width:360px;height:640px;background:#333;overflow:hidden;border-radius:15px}
+#player{position:absolute;width:50px;height:90px;bottom:20px;left:155px;font-size:50px;z-index:10}
+.enemy{position:absolute;width:50px;height:90px;font-size:50px}
+#scoreBoard{position:absolute;top:10px;left:10px;color:white;font-weight:bold;z-index:20;background:rgba(0,0,0,0.5);padding:8px 15px;border-radius:20px}
+.btn{flex:1;padding:20px;background:rgba(255,255,255,0.1);color:white;font-size:30px;text-align:center;border:none}
+#startScreen{position:absolute;width:100%;height:100%;background:#fce4ec;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:100;border-radius:15px;text-align:center}
+.playBtn{background:#6a1b9a;color:white;padding:15px 40px;border:none;border-radius:30px;font-size:20px}
+#controls{position:absolute;bottom:0;width:100%;display:flex;z-index:20}
+.lane{position:absolute;width:6px;height:100%;background:repeating-linear-gradient(white 0 20px, transparent 20px 40px);top:0}
+</style>
+</head>
+<body>
+<div id="gameBox">
+<div class="lane" style="left:33%"></div><div class="lane" style="left:66%"></div>
+<div id="scoreBoard">Score: 0</div>
+<div id="player">🏎️</div>
+<div id="startScreen"><h1>🏁 Car Race</h1><p>Left / Right se bachao</p><button class="playBtn" onclick="startGame()">PLAY NOW</button></div>
+<div id="controls"><button class="btn" onclick="moveLeft()">⬅️</button><button class="btn" onclick="moveRight()">➡️</button></div>
+</div>
+<script>
+let playerX=155, positions=[30,155,280], currentPos=1, score=0, gameRunning=false, gameInterval, enemyInterval;
+function moveLeft(){if(currentPos>0){currentPos--; document.getElementById('player').style.left=positions[currentPos]+'px';}}
+function moveRight(){if(currentPos<2){currentPos++; document.getElementById('player').style.left=positions[currentPos]+'px';}}
+function startGame(){document.getElementById('startScreen').style.display='none';score=0;currentPos=1;document.getElementById('player').style.left='155px';gameRunning=true;document.querySelectorAll('.enemy').forEach(e=>e.remove());gameInterval=setInterval(()=>{score++;document.getElementById('scoreBoard').innerText='Score: '+score;},100);enemyInterval=setInterval(createEnemy,1200);}
+function createEnemy(){if(!gameRunning)return;let e=document.createElement('div');e.className='enemy';e.innerText=['🚗','🚕','🚙'][Math.floor(Math.random()*3)];e.style.left=positions[Math.floor(Math.random()*3)]+'px';e.style.top='-100px';document.getElementById('gameBox').appendChild(e);let y=-100;let m=setInterval(()=>{if(!gameRunning){clearInterval(m);e.remove();return;}y+=6+score/100;e.style.top=y+'px';if(y>600){clearInterval(m);e.remove();}if(Math.abs(y-530)<60 && parseInt(e.style.left)==positions[currentPos]){gameRunning=false;clearInterval(gameInterval);clearInterval(enemyInterval);document.getElementById('startScreen').style.display='flex';document.getElementById('startScreen').innerHTML='<h1>Game Over!</h1><p>Score: '+score+'</p><button class=playBtn onclick=startGame()>PLAY AGAIN</button>';}},20);}
+</script>
+</body>
+</html>
